@@ -193,6 +193,8 @@ def create_tf_example(image,
 
 def _create_tf_record_from_coco_annotations(
     annotations_file, image_dir, output_path, include_masks, num_shards):
+
+
   """Loads COCO annotation json files and converts to tf.Record format.
 
   Args:
@@ -203,11 +205,15 @@ def _create_tf_record_from_coco_annotations(
       (PNG encoded) in the result. default: False.
     num_shards: number of output file shards.
   """
+
+
+
   with contextlib2.ExitStack() as tf_record_close_stack, \
       tf.gfile.GFile(annotations_file, 'r') as fid:
     output_tfrecords = tf_record_creation_util.open_sharded_output_tfrecords(
         tf_record_close_stack, output_path, num_shards)
     groundtruth_data = json.load(fid)
+
     images = groundtruth_data['images']
     category_index = label_map_util.create_category_index(
         groundtruth_data['categories'])
@@ -245,18 +251,18 @@ def _create_tf_record_from_coco_annotations(
 
 
 def main(_):
-  assert FLAGS.train_image_dir, '`train_image_dir` missing.'
-  assert FLAGS.val_image_dir, '`val_image_dir` missing.'
-  assert FLAGS.test_image_dir, '`test_image_dir` missing.'
+  #assert FLAGS.train_image_dir, '`train_image_dir` missing.'
+  #assert FLAGS.val_image_dir, '`val_image_dir` missing.'
+  #assert FLAGS.test_image_dir, '`test_image_dir` missing.'
   assert FLAGS.train_annotations_file, '`train_annotations_file` missing.'
-  assert FLAGS.val_annotations_file, '`val_annotations_file` missing.'
-  assert FLAGS.testdev_annotations_file, '`testdev_annotations_file` missing.'
+  #assert FLAGS.val_annotations_file, '`val_annotations_file` missing.'
+  #assert FLAGS.testdev_annotations_file, '`testdev_annotations_file` missing.'
 
   if not tf.gfile.IsDirectory(FLAGS.output_dir):
     tf.gfile.MakeDirs(FLAGS.output_dir)
   train_output_path = os.path.join(FLAGS.output_dir, 'coco_train.record')
-  val_output_path = os.path.join(FLAGS.output_dir, 'coco_val.record')
-  testdev_output_path = os.path.join(FLAGS.output_dir, 'coco_testdev.record')
+  #val_output_path = os.path.join(FLAGS.output_dir, 'coco_val.record')
+  #testdev_output_path = os.path.join(FLAGS.output_dir, 'coco_testdev.record')
 
   _create_tf_record_from_coco_annotations(
       FLAGS.train_annotations_file,
@@ -264,7 +270,8 @@ def main(_):
       train_output_path,
       FLAGS.include_masks,
       num_shards=100)
-  _create_tf_record_from_coco_annotations(
+
+ """_create_tf_record_from_coco_annotations(
       FLAGS.val_annotations_file,
       FLAGS.val_image_dir,
       val_output_path,
@@ -276,7 +283,6 @@ def main(_):
       testdev_output_path,
       FLAGS.include_masks,
       num_shards=100)
-
-
+"""
 if __name__ == '__main__':
   tf.app.run()
